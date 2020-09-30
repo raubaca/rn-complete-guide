@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
+  Dimensions,
   Keyboard,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -20,6 +22,9 @@ const StartGameScreen = (props) => {
   const [number, setNumber] = useState('');
   const [confirmed, setConfirmed] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState('');
+  const [buttonWidth, setButtonWidth] = useState(
+    Dimensions.get('window').width / 4
+  );
 
   const numberInputHandler = (inputText) => {
     setNumber(inputText.replace(/[^0-9]/g, ''));
@@ -29,6 +34,14 @@ const StartGameScreen = (props) => {
     setNumber('');
     setConfirmed(false);
   };
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setButtonWidth(Dimensions.get('window').width / 4);
+    };
+    Dimensions.addEventListener('change', updateLayout);
+    return () => Dimensions.removeEventListener('change', updateLayout);
+  });
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(number);
@@ -61,41 +74,43 @@ const StartGameScreen = (props) => {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.screen}>
-        <TitleText style={styles.title}>Start a New Game!</TitleText>
-        <Card style={styles.inputContainer}>
-          <BodyText>Select a Number</BodyText>
-          <Input
-            style={styles.input}
-            blurOnSubmit
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="number-pad"
-            maxLength={2}
-            value={number}
-            onChangeText={numberInputHandler}
-          />
-          <View style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Button
-                title="Reset"
-                onPress={resetInputHandler}
-                color={Colors.accent}
-              />
+    <ScrollView>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.screen}>
+          <TitleText style={styles.title}>Start a New Game!</TitleText>
+          <Card style={styles.inputContainer}>
+            <BodyText>Select a Number</BodyText>
+            <Input
+              style={styles.input}
+              blurOnSubmit
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="number-pad"
+              maxLength={2}
+              value={number}
+              onChangeText={numberInputHandler}
+            />
+            <View style={styles.buttonContainer}>
+              <View style={{ width: buttonWidth }}>
+                <Button
+                  title="Reset"
+                  onPress={resetInputHandler}
+                  color={Colors.accent}
+                />
+              </View>
+              <View style={{ width: buttonWidth }}>
+                <Button
+                  title="Confirm"
+                  onPress={confirmInputHandler}
+                  color={Colors.primary}
+                />
+              </View>
             </View>
-            <View style={styles.button}>
-              <Button
-                title="Confirm"
-                onPress={confirmInputHandler}
-                color={Colors.primary}
-              />
-            </View>
-          </View>
-        </Card>
-        {confirmedOutput}
-      </View>
-    </TouchableWithoutFeedback>
+          </Card>
+          {confirmedOutput}
+        </View>
+      </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
@@ -112,8 +127,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   inputContainer: {
-    width: 300,
-    maxWidth: '80%',
+    width: '80%',
+    maxWidth: '95%',
+    minWidth: 300,
     alignItems: 'center',
   },
   buttonContainer: {
@@ -121,9 +137,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-  },
-  button: {
-    width: 100,
   },
   input: {
     width: 50,
