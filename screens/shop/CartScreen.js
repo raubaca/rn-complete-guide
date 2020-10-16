@@ -1,5 +1,12 @@
-import React from 'react';
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CartItem from '../../components/shop/CartItem';
@@ -9,6 +16,8 @@ import * as cartActions from '../../store/actions/cart';
 import * as orderActions from '../../store/actions/orders';
 
 const CartScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const cartTotalAmount = useSelector((state) => state.cart.totalAmount);
   const cartItems = useSelector((state) => {
     const itemsObj = state.cart.items;
@@ -27,6 +36,13 @@ const CartScreen = (props) => {
     );
   });
   const dispatch = useDispatch();
+
+  const sendOrderHandler = async () => {
+    setIsLoading(true);
+    await dispatch(orderActions.addOrder(cartItems, cartTotalAmount));
+    setIsLoading(false);
+  };
+
   return (
     <View style={styles.screen}>
       <Card style={styles.summary}>
@@ -36,14 +52,16 @@ const CartScreen = (props) => {
             ${Math.round(cartTotalAmount.toFixed(2) * 100) / 100}
           </Text>
         </Text>
-        <Button
-          color={Colors.accent}
-          title="Order Now"
-          disabled={cartItems.length === 0}
-          onPress={() =>
-            dispatch(orderActions.addOrder(cartItems, cartTotalAmount))
-          }
-        />
+        {isLoading ? (
+          <ActivityIndicator size="large" color={Colors.primary} />
+        ) : (
+          <Button
+            color={Colors.accent}
+            title="Order Now"
+            disabled={cartItems.length === 0}
+            onPress={sendOrderHandler}
+          />
+        )}
       </Card>
       <FlatList
         data={cartItems}
@@ -87,5 +105,10 @@ const styles = StyleSheet.create({
   },
   amount: {
     color: Colors.primary,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
