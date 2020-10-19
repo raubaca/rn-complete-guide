@@ -4,6 +4,7 @@ import {
   FlatList,
   Platform,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -29,6 +30,14 @@ const OrdersScreen = () => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No orders found, maybe start ordering some products</Text>
       </View>
     );
   }
