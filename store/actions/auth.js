@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native';
+import { API_KEY } from '../../variables';
 
 export const AUTHENTICATE = 'AUTHENTICATE';
 export const LOGOUT = 'LOGOUT';
@@ -19,7 +20,7 @@ export const authenticate = (userId, token, expireTime) => {
 export const signup = (email, password) => {
   return async (dispatch) => {
     const response = await fetch(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBGjxvbuu7oQmE51_Hl-WqnckksDf7-aX0',
+      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
       {
         method: 'POST',
         headers: {
@@ -62,7 +63,7 @@ export const signup = (email, password) => {
 export const login = (email, password) => {
   return async (dispatch) => {
     const response = await fetch(
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBGjxvbuu7oQmE51_Hl-WqnckksDf7-aX0',
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
       {
         method: 'POST',
         headers: {
@@ -90,10 +91,12 @@ export const login = (email, password) => {
 
     const resData = await response.json();
 
-    authenticate(
-      resData.localId,
-      resData.idToken,
-      parseInt(resData.expiresIn) * 1000
+    dispatch(
+      authenticate(
+        resData.localId,
+        resData.idToken,
+        parseInt(resData.expiresIn) * 1000
+      )
     );
     const expirationDate = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
