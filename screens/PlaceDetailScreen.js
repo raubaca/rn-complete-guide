@@ -9,12 +9,12 @@ const PlaceDetailScreen = () => {
   );
 };
 
-export default PlaceDetailScreen;
-
 PlaceDetailScreen.navigationOptions = (navData) => {
   return {
     headerTitle: navData.navigation.getParam('placeTitle'),
   };
 };
+
+export default PlaceDetailScreen;
 
 const styles = StyleSheet.create({});
